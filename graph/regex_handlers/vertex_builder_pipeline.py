@@ -29,7 +29,6 @@ def get_word_inds() -> list[str]:
         for s_sub_idx, s_sub in enumerate(substrs):
             pass
 
-
 # done first
 def build_no_white_space_col(df: pd.DataFrame, batch_size=10000) -> pd.DataFrame:
     n, _ = df.shape # rows, cols
@@ -42,30 +41,40 @@ def build_no_white_space_col(df: pd.DataFrame, batch_size=10000) -> pd.DataFrame
 
     return df
 
+# # ignore the -_/\ characters
+# def remove_most_punctuation(arr: np.array) -> np.array:
+#     fltr = "!\"#$%&\'()*+,.:;<=>?@[]^`{|}~"
+#     return np.array([
+#         s.translate(str.maketrans('', '', fltr)) if isinstance(s, str) else ""
+#         for s in arr
+#     ])
+
+def build_no_punctuation(df: pd.DataFrame, batch_size=10000) -> pd.DataFrame:
+    n, _ = df.shape # rows, cols
+
+    # Iterate through the DataFrame in batches
+    for start in tqdm(range(0, n, batch_size), desc="Building TEXT_NO_PUNC column"):
+        end = min(start + batch_size, n)
+        
+        # ignore the -_/\ characters
+        fltr = "!\"#$%&\'()*+,.:;<=>?@[]^`{|}~"
+        df.loc[start:end, "TEXT_NO_PUNC"] = df.loc[start:end, "TEXT_NO_WHITE_SPACE"].apply(lambda lst: [s.translate(str.maketrans('', '', fltr)) if isinstance(s, str) else "" for s in lst])
+
+    return df
+
+
 # paths need to be same length
 # writes output parquet files to use later
 def search_pipeline(parquet_paths: list[str], out_paths: list[str]) -> None:
 
     for idx, f in tqdm(enumerate(parquet_paths), desc="Search Pipeline Time"):
         df = read_parquet(f)
-        df = build_no_white_space_col(df, batch_size=10000)
+        # df = build_no_white_space_col(df, batch_size=10000)
+        df = build_no_punctuation(df=df, batch_size=10000)
 
         df.to_parquet(out_paths[idx])
         del df
         gc.collect()
-
-
-
-
-
-# done second
-# does not remove the following  '-_\/'
-def remove_punctuation():
-    pass
-
-def get_regex() -> str:
-
-    return "\s"
 
 def get_words_toy() -> list[str]:
 
@@ -172,5 +181,76 @@ if __name__ == "__main__":
 
     parq_paths: list[str] = args.parq_paths
     out_paths: list[str] = args.out_paths
+
+    # swapping for the removing punctuation 
+    parq_paths = [
+                            "no_white_spaces/search_pipeline_out_0.parquet",
+                            "no_white_spaces/search_pipeline_out_1.parquet",
+                            "no_white_spaces/search_pipeline_out_2.parquet",
+                            "no_white_spaces/search_pipeline_out_3.parquet",
+                            "no_white_spaces/search_pipeline_out_4.parquet",
+                            "no_white_spaces/search_pipeline_out_5.parquet",
+                            "no_white_spaces/search_pipeline_out_6.parquet",
+                            "no_white_spaces/search_pipeline_out_7.parquet",
+                            "no_white_spaces/search_pipeline_out_8.parquet",
+                            "no_white_spaces/search_pipeline_out_9.parquet",
+                            "no_white_spaces/search_pipeline_out_10.parquet",
+                            "no_white_spaces/search_pipeline_out_11.parquet",
+                            "no_white_spaces/search_pipeline_out_12.parquet",
+                            "no_white_spaces/search_pipeline_out_13.parquet",
+                            "no_white_spaces/search_pipeline_out_14.parquet",
+                            "no_white_spaces/search_pipeline_out_15.parquet",
+                            "no_white_spaces/search_pipeline_out_16.parquet",
+                            "no_white_spaces/search_pipeline_out_17.parquet",
+                            "no_white_spaces/search_pipeline_out_18.parquet",
+                            "no_white_spaces/search_pipeline_out_19.parquet",
+                            "no_white_spaces/search_pipeline_out_20.parquet",
+                            "no_white_spaces/search_pipeline_out_21.parquet",
+                            "no_white_spaces/search_pipeline_out_22.parquet",
+                            "no_white_spaces/search_pipeline_out_23.parquet",
+                            "no_white_spaces/search_pipeline_out_24.parquet",
+                            "no_white_spaces/search_pipeline_out_25.parquet",
+                            "no_white_spaces/search_pipeline_out_26.parquet",
+                            "no_white_spaces/search_pipeline_out_27.parquet",
+                            "no_white_spaces/search_pipeline_out_28.parquet",
+                            "no_white_spaces/search_pipeline_out_29.parquet",
+                            "no_white_spaces/search_pipeline_out_30.parquet",
+                            "no_white_spaces/search_pipeline_out_31.parquet",
+                        ]
+    out_paths = [
+                            "no_punc/search_pipeline_out_nopunc_0.parquet",
+                            "no_punc/search_pipeline_out_nopunc_1.parquet",
+                            "no_punc/search_pipeline_out_nopunc_2.parquet",
+                            "no_punc/search_pipeline_out_nopunc_3.parquet",
+                            "no_punc/search_pipeline_out_nopunc_4.parquet",
+                            "no_punc/search_pipeline_out_nopunc_5.parquet",
+                            "no_punc/search_pipeline_out_nopunc_6.parquet",
+                            "no_punc/search_pipeline_out_nopunc_7.parquet",
+                            "no_punc/search_pipeline_out_nopunc_8.parquet",
+                            "no_punc/search_pipeline_out_nopunc_9.parquet",
+                            "no_punc/search_pipeline_out_nopunc_10.parquet",
+                            "no_punc/search_pipeline_out_nopunc_11.parquet",
+                            "no_punc/search_pipeline_out_nopunc_12.parquet",
+                            "no_punc/search_pipeline_out_nopunc_13.parquet",
+                            "no_punc/search_pipeline_out_nopunc_14.parquet",
+                            "no_punc/search_pipeline_out_nopunc_15.parquet",
+                            "no_punc/search_pipeline_out_nopunc_16.parquet",
+                            "no_punc/search_pipeline_out_nopunc_17.parquet",
+                            "no_punc/search_pipeline_out_nopunc_18.parquet",
+                            "no_punc/search_pipeline_out_nopunc_19.parquet",
+                            "no_punc/search_pipeline_out_nopunc_20.parquet",
+                            "no_punc/search_pipeline_out_nopunc_21.parquet",
+                            "no_punc/search_pipeline_out_nopunc_22.parquet",
+                            "no_punc/search_pipeline_out_nopunc_23.parquet",
+                            "no_punc/search_pipeline_out_nopunc_24.parquet",
+                            "no_punc/search_pipeline_out_nopunc_25.parquet",
+                            "no_punc/search_pipeline_out_nopunc_26.parquet",
+                            "no_punc/search_pipeline_out_nopunc_27.parquet",
+                            "no_punc/search_pipeline_out_nopunc_28.parquet",
+                            "no_punc/search_pipeline_out_nopunc_29.parquet",
+                            "no_punc/search_pipeline_out_nopunc_30.parquet",
+                            "no_punc/search_pipeline_out_nopunc_31.parquet",
+                        ]
+    
 
     search_pipeline(parquet_paths=parq_paths, out_paths=out_paths)
