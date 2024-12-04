@@ -15,16 +15,23 @@ def construct_graph(parquet_paths: list[str]) -> tuple[Graph, dict[str,int]]:
     key_map: dict[str, int] = {}
     str_id: int= 0
 
-    for parq_file in tqdm(parquet_paths, desc="Processing laion400M parquet files"):
+    for parq_file in tqdm(parquet_paths, desc="Processing laion400M parquet batches"):
         df = read_parquet(parq_file)
-        filtered_strs = df.loc[0:20000, "TEXT_NO_PUNC"]
+        filtered_strs = df.loc[0:500000, "TEXT_NO_PUNC"]
 
         # treat each contigious string as a vertex
         for row in tqdm(filtered_strs, desc='Building graph on this batch'):
-
-
+            
             # if len(row) > 15:
                 # continue
+
+            vertex_cls_strs = ['man', 'men', 'male', 'women', 'woman', 'female']
+            row = [s.lower() for s in row]
+
+            found = any(word in row for word in vertex_cls_strs)
+            if not found:
+                continue
+
 
             verticies_in_sentence: list[int] = []
 
@@ -82,6 +89,28 @@ def load_graph_and_keymap(graph_file: str, keymap_file: str):
     
     return graph, key_map
 
+# returns a list of neighbors to this vertex string ordered by weight
+def get_neighbors(g: Graph, key_map: dict[str, int], vertex_str: str) -> list[tuple]:
+
+    if vertex_str not in key_map:
+        return None
+
+
+    vert_id = key_map[vertex_str]
+    neighbor_ids = g.neighbors(vert_id)
+
+    for neighbor_id in neighbor_ids:
+        # Integer to find the corresponding key for
+        target_int = neighbor_id
+        # Find the key (vertex_str) corresponding to the target integer
+        neighbor_str = next((key for key, value in key_map.items() if value == target_int), None)
+        
+        edge_id = g.get_eid(vert_id, neighbor_id)
+
+        print(neighbor_str, g.es[edge_id]["weight"])
+
+
+
 if __name__ == '__main__':
 
 
@@ -131,4 +160,4 @@ if __name__ == '__main__':
 
     graph, key_map = construct_graph(parquet_paths=args.filtered_parquet_paths)
 
-    save_graph_and_keymap(graph=graph, key_map=key_map, graph_file='laion400M_graph.pkl',  keymap_file='key_map.pkl.gz')
+    save_graph_and_keymap(graph=graph, key_map=key_map, graph_file='results/laion400M_graph_malefemale_500000.pkl',  keymap_file='results/key_map_malefemale_500000.pkl.gz')
