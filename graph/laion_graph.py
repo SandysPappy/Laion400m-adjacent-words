@@ -25,7 +25,7 @@ def construct_graph(parquet_paths: list[str]) -> tuple[Graph, dict[str,int]]:
 
     for parq_file in tqdm(parquet_paths, desc="Processing laion400M parquet batches"):
         df = read_parquet(parq_file)
-        filtered_strs = df.loc[0:200000, "TEXT_NO_PUNC"]
+        filtered_strs = df.loc[800000:-1, "TEXT_NO_PUNC"]
 
         # treat each contigious string in the list as a vertex
         for row in tqdm(filtered_strs, desc='Building graph on this batch'):
@@ -103,10 +103,14 @@ def load_graph_and_keymap(graph_file: str, keymap_file: str):
     return graph, key_map
 
 # returns a list of neighbors to this vertex string ordered by weight
-def get_neighbors(g: Graph, key_map: dict[str, int], vertex_str: str) -> list[tuple[str, int]]:
+def get_neighbors(g: Graph, key_map: dict[str, int], vertex_str: str, threshold=None) -> list[tuple[str, int]]:
 
     if vertex_str not in key_map:
         return None
+    
+    id_to_key: dict[int, str] = {}
+    for str_key in key_map.keys():
+        id_to_key[key_map[str_key]] = str_key
 
     vert_id = key_map[vertex_str]
     neighbor_ids = g.neighbors(vert_id)
@@ -117,7 +121,8 @@ def get_neighbors(g: Graph, key_map: dict[str, int], vertex_str: str) -> list[tu
         # Integer to find the corresponding key for
         target_int = neighbor_id
         # Find the key (vertex_str) corresponding to the target integer
-        neighbor_str = next((key for key, value in key_map.items() if value == target_int), None)
+        # neighbor_str = next((key for key, value in key_map.items() if value == target_int), None)
+        neighbor_str = id_to_key[neighbor_id]
         
         edge_id = g.get_eid(vert_id, neighbor_id)
         edge_weight = g.es[edge_id]["weight"]
@@ -126,6 +131,10 @@ def get_neighbors(g: Graph, key_map: dict[str, int], vertex_str: str) -> list[tu
 
     # order so largest weights are first
     all_neighbors = sorted(all_neighbors, key=lambda x: x[1], reverse=True)
+
+    if threshold:
+        all_neighbors = [item for item in all_neighbors if item[1] > threshold]
+
 
     return all_neighbors
 
@@ -170,6 +179,8 @@ def filter_women_vertices(graph: Graph, key_map: dict[str, int], weight_threshol
             continue
 
     return valid_verts
+
+
 
 
 
@@ -223,4 +234,4 @@ if __name__ == '__main__':
 
     graph, key_map = construct_graph(parquet_paths=args.filtered_parquet_paths)
 
-    save_graph_and_keymap(graph=graph, key_map=key_map, graph_file='results/laion400M_graph_malefemale_neighbors_only_200000_ALL.pkl',  keymap_file='results/key_map_malefemale_neighbors_only_200000_ALL.pkl.gz')
+    save_graph_and_keymap(graph=graph, key_map=key_map, graph_file='results/laion400M_graph_malefemale_neighbors_only_800000_toend_ALL.pkl',  keymap_file='results/key_map_malefemale_neighbors_only_800000_toend_ALL.pkl.gz')
