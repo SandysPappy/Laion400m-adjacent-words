@@ -2,6 +2,13 @@
 
 ### Tyler VanderMate
 
+[Image of a salad](/images/food/salad.png)
+[Plot of similarities for the salad image](plots/salad1.png)
+
+[Image of a man](images/men-women-classification/men/00000004.jpg
+)
+[Plot of similarieis for an image of a man](plots/man4.png)
+
 ---
 ### Environment Setup
 
