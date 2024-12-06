@@ -1,12 +1,17 @@
-# Identifying Zero-Shot Clip Biases Via Network Analysis of Training Data
-
-### Tyler VanderMate
+# Identifying Zero-Shot OpenClip Biases Via Network Analysis of Training Metadata
 
 ![Image of a salad](/images/food/salad.png)
 ![Plot of similarities for the salad image](plots/salad1.png)
 
+![Image of a donut](/images/food/donut.png)
+![Plot of similarities for the salad image](plots/donut1.png)
+
 ![Image of a man](images/men-women-classification/men/00000004.jpg)
 ![Plot of similarieis for an image of a man](plots/man4.png)
+
+![Image of a woman](images/men-women-classification/women/00000005.jpeg)
+![Plot of similarieis for an image of a woman](plots/woman4.png)
+
 
 ---
 ### Environment Setup
