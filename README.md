@@ -2,12 +2,11 @@
 
 ### Tyler VanderMate
 
-[Image of a salad](/images/food/salad.png)
-[Plot of similarities for the salad image](plots/salad1.png)
+![Image of a salad](/images/food/salad.png)
+![Plot of similarities for the salad image](plots/salad1.png)
 
-[Image of a man](images/men-women-classification/men/00000004.jpg
-)
-[Plot of similarieis for an image of a man](plots/man4.png)
+![Image of a man](images/men-women-classification/men/00000004.jpg)
+![Plot of similarieis for an image of a man](plots/man4.png)
 
 ---
 ### Environment Setup
@@ -23,7 +22,7 @@
   ```
 
 ### Downloading LAION400M
-- To run the pipeline for building the graphs, you'll need to [download LAION400M separately](https://laion.ai/blog/laion-400-open-dataset/) and place it into a folder labeled laion400-meta.
+- To run the pipeline for building the graphs, you'll need to [download LAION400M separately](https://laion.ai/blog/laion-400-open-dataset/) and place it into a folder labeled laion400-meta
   ```bash
   cd graph/regex_handlers
   python vertex_builder_pipeline.py
